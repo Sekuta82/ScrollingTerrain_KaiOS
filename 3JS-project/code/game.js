@@ -4,7 +4,7 @@ var MODULE = (function (app) {
   // ======== CONFIG ========
   var isDebugMode = true;
   var isDoubleSize = true;	
-  var useHiresTerrain = true;
+  var useHiresTerrain = false;
   var showWireframe = false;
 
   app.screenWidth = isDoubleSize ? 480 : 240;
