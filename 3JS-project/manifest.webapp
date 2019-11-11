@@ -1,0 +1,28 @@
+{
+  "name": "ScrollingTerrain",
+   "version": "0.0.1",
+  "description": "SScrollingTerrain",
+  "subtitle": "ScrollingTerrain",
+  "launch_path": "/index.html",
+  "origin": "app://ScrollingTerrain",
+  "icons": {
+    "56": "/icons/ScrollingTerrain_56.png",
+    "112": "/icons/ScrollingTerrain_112.png"
+  },
+  "theme_color": "#65ACFF",
+  "developer": {
+    "name": "Christian Waadt",
+    "url": "http://www.ays-arts.de"
+  },
+  "type": "web",
+  "fullscreen": "true",
+  "locales": {
+    "en-US": {
+      "name": "ScrollingTerrain",
+      "description": "ScrollingTerrain",
+      "subtitle": "ScrollingTerrain"
+    }
+  },
+  "default_locale": "en-US",
+  "orientation": [ "portrait-primary" ]
+}
