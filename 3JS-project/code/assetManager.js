@@ -2,6 +2,21 @@ var MODULE = (function (app) {
 
     app.gltf_scenes = {};
 
+    var cube;
+    app.get_background = function () {
+        cube = new THREE.CubeTextureLoader()
+            .setPath('assets/cubeMaps/')
+            .load([
+                'groundLevel_left.jpg',
+                'groundLevel_right.jpg',
+                'groundLevel_top.jpg',
+                'groundLevel_bottom.jpg',
+                'groundLevel_front.jpg',
+                'groundLevel_back.jpg'
+            ]);
+        return cube;
+    }
+
     app.get_fog = function (color, near, far) {
         var fog = new THREE.Fog(color, near, far);
         return fog;
@@ -25,7 +40,7 @@ var MODULE = (function (app) {
 
     //terrain 
     app.terrain_scaleFactor = 30.0;
-    app.terrain_height = 100.0;
+    app.terrain_height = 80.0;
 
     app.get_terrain = function () {
         var object = {};
@@ -44,11 +59,14 @@ var MODULE = (function (app) {
         var colorMap = new THREE.TextureLoader().load('assets/terrain/terrain_color.jpg');
         object.colorMap = colorMap;
         // load height map and add it to a new canvas for color lookup in code
+        var normalMap = new THREE.TextureLoader().load('assets/terrain/terrain_normal.png', function (texture) { object.normalMapData = createCanvas(texture.image); });
         var heightMap = new THREE.TextureLoader().load('assets/terrain/terrain_masks.jpg', function (texture) { object.heightMapData = createCanvas(texture.image); });
         object.heightMap = heightMap;
+        object.normalMap = normalMap;
 
         // terrain material with color and height map
         var material = app.get_terrainMaterial();
+        material.uniforms.envMap.value = cube;
         material.uniforms.colorMap.value = colorMap;
         material.uniforms.colorMap.value.wrapS = material.uniforms.colorMap.value.wrapT = THREE.RepeatWrapping;
         material.uniforms.heightMap.value = heightMap;
