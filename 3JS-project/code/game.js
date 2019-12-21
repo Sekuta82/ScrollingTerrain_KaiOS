@@ -75,7 +75,6 @@ var MODULE = (function (app) {
 
     function scene_setup() {
         // terrain
-        terrainObject.mesh.position.z = terrainObject.rayMesh.position.z = -1.0;
         scene.add(terrainObject.object);
         //if (isDebugMode) terrainObject.material.wireframe = true;
         raycastTargets.push(terrainObject.rayMesh); // add to raycast targets; don't cast rays to the hi-res terrain mesh!
