@@ -75,7 +75,6 @@ var MODULE = (function (app) {
 
     function scene_setup() {
         // terrain
-        terrainObject.mesh.position.z = terrainObject.rayMesh.position.z = -1.0;
         scene.add(terrainObject.object);
         //if (isDebugMode) terrainObject.material.wireframe = true;
         raycastTargets.push(terrainObject.rayMesh); // add to raycast targets; don't cast rays to the hi-res terrain mesh!
@@ -256,7 +255,7 @@ var MODULE = (function (app) {
     var directionBox;
     if (isDebugMode) {
         var size = [2, 200, 2];
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 20; i++) {
             var cube = app.get_cube(size, 0xff0000);
             cube.position.z = -500 + i * 50;
             scene.add(cube);
