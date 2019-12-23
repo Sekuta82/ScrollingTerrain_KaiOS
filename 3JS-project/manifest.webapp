@@ -1,7 +1,7 @@
 {
   "name": "ScrollingTerrain",
    "version": "0.0.1",
-  "description": "SScrollingTerrain",
+  "description": "ScrollingTerrain",
   "subtitle": "ScrollingTerrain",
   "launch_path": "/index.html",
   "origin": "app://ScrollingTerrain",
