@@ -15,8 +15,6 @@ var MODULE = (function (app) {
     var player = new THREE.Group();
     var player_startPosition = new THREE.Vector3();
 
-    var terrainObject = {};
-
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(screenWidth, screenHeight);
     renderer.antialiasing = false;
@@ -34,40 +32,8 @@ var MODULE = (function (app) {
     const fog_color = backgroundColor;
     scene.fog = app.get_fog(fog_color, 10, app.terrain_scaleFactor * 50);
 
-    // GLTF list
-    const gltf_files = {
-        'terrain_ground': 'assets/terrain/terrain_ground.glb'
-    }
-
-    // ======== GLTF loading ========
-    const gltf_loader = new THREE.GLTFLoader();
-    gltf_loader.crossOrigin = true;
-
-    var fileIndex = 0;
-    function load_gltf() {
-        if (fileIndex > Object.keys(gltf_files).length - 1) {
-            // all files done
-            scene_start();
-            return;
-        }
-        var key = Object.keys(gltf_files)[fileIndex]; // get key by index
-        gltf_loader.load(gltf_files[key], function (gltf) {
-            app.gltf_scenes[key] = (gltf.scene); // add to scenes dict
-            fileIndex++;
-            get_objects(key); // do something after loading
-            load_gltf(); // load next file
-        });
-    }
-    load_gltf();
-
-    function get_objects(name) {
-        switch (name) {
-            case 'terrain_ground': terrainObject = app.get_terrain(); break;
-        }
-    }
-
     // ======== START ========
-    function scene_start() {
+    app.scene_start = function () {
         scene_setup();
         document.body.appendChild(renderer.domElement);
         gameRunning = true;
@@ -75,9 +41,9 @@ var MODULE = (function (app) {
 
     function scene_setup() {
         // terrain
-        scene.add(terrainObject.object);
-        //if (isDebugMode) terrainObject.material.wireframe = true;
-        raycastTargets.push(terrainObject.rayMesh); // add to raycast targets; don't cast rays to the hi-res terrain mesh!
+        scene.add(app.terrainObject.object);
+        //if (isDebugMode) app.terrainObject.material.wireframe = true;
+        raycastTargets.push(app.terrainObject.rayMesh); // add to raycast targets; don't cast rays to the hi-res terrain mesh!
 
         // create player
         player_startPosition.set(10, 0, 0);
@@ -115,6 +81,7 @@ var MODULE = (function (app) {
     function animate() {
         requestAnimationFrame(animate);
         if (!gameRunning) return;
+        if (app.terrainObject.normalMapData == null || app.terrainObject.heightMapData == null) return;
 
         deltaTime = clock.getDelta();
         getFPS(deltaTime);
@@ -145,11 +112,11 @@ var MODULE = (function (app) {
 
         // animate terrain
         player.getWorldPosition(player_worldPosition);
-        terrainObject.object.position.set(player_worldPosition.x, -app.terrain_height, player_worldPosition.z);
-        terrainObject.object.rotation.y = player.rotation.y;
+        app.terrainObject.object.position.set(player_worldPosition.x, -app.terrain_height, player_worldPosition.z);
+        app.terrainObject.object.rotation.y = player.rotation.y;
         terrainShift.set(-player_worldPosition.x * terrain_scale, player_worldPosition.z * terrain_scale);
-        terrainObject.material.uniforms.shift.value = terrainShift;
-        terrainObject.material.uniforms.worldRotation.value = -terrainObject.object.rotation.y;
+        app.terrainObject.material.uniforms.shift.value = terrainShift;
+        app.terrainObject.material.uniforms.worldRotation.value = -app.terrainObject.object.rotation.y;
 
         // detect collisions with terrain
         terrain_ray_origin.set(player_worldPosition.x, 10, player_worldPosition.z);
@@ -210,11 +177,11 @@ var MODULE = (function (app) {
     var terrain_height = 0.0;
 
     function get_terrain_height(uv) {
-        transformedUV.copy(transform_UVs(uv, terrainShift, -terrainObject.object.rotation.y));
-        if (terrainObject.heightMap.image) {
-            pixelCoord = [transformedUV.x * terrainObject.heightMap.image.width, (1 - transformedUV.y) * terrainObject.heightMap.image.height];
-            normalmap_pixel = terrainObject.normalMapData.getImageData(pixelCoord[0], pixelCoord[1], 1, 1).data;
-            heightmap_pixel = terrainObject.heightMapData.getImageData(pixelCoord[0], pixelCoord[1], 1, 1).data;
+        transformedUV.copy(transform_UVs(uv, terrainShift, -app.terrainObject.object.rotation.y));
+        if (app.terrainObject.heightMap.image) {
+            pixelCoord = [transformedUV.x * app.terrainObject.heightMap.image.width, (1 - transformedUV.y) * app.terrainObject.heightMap.image.height];
+            normalmap_pixel = app.terrainObject.normalMapData.getImageData(pixelCoord[0], pixelCoord[1], 1, 1).data;
+            heightmap_pixel = app.terrainObject.heightMapData.getImageData(pixelCoord[0], pixelCoord[1], 1, 1).data;
         }
         // surface normal based on normal map
         terrain_normalDirection.set(

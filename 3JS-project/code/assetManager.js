@@ -1,6 +1,56 @@
 var MODULE = (function (app) {
+    app.gltf_loadingDone = false;
+
+    app.totalTextureCount = 4;
+    app.texturesLoaded = 0;
+
+    var resourceLoadingCheck_interval = setInterval(checkLoadingStatus, 100);
+
+    function checkLoadingStatus() {
+        if (app.gltf_loadingDone && app.texturesLoaded >= app.totalTextureCount) {
+            app.scene_start();
+            clearInterval(resourceLoadingCheck_interval);
+        }
+    }
+
+    // GLTF list
+    const gltf_files = {
+        'terrain_ground': 'assets/terrain/terrain_ground.glb'
+    }
 
     app.gltf_scenes = {};
+
+    // ======== GLTF loading ========
+    const gltf_loader = new THREE.GLTFLoader();
+    gltf_loader.crossOrigin = true;
+
+    var fileIndex = 0;
+    function load_gltf() {
+        if (fileIndex > Object.keys(gltf_files).length - 1) {
+            // all files done
+            app.gltf_loadingDone = true;
+            return;
+        }
+        var key = Object.keys(gltf_files)[fileIndex]; // get key by index
+        gltf_loader.load(gltf_files[key], function (gltf) {
+            app.gltf_scenes[key] = (gltf.scene); // add to scenes dict
+            fileIndex++;
+            get_objects(key); // do something after loading
+            load_gltf(); // load next file
+        });
+    }
+    load_gltf();
+
+    function get_objects(name) {
+        switch (name) {
+            case 'terrain_ground': app.terrainObject = app.get_terrain(); break;
+        }
+    }
+
+    // textures
+    function textureLoaded() {
+        app.texturesLoaded++;
+    }
 
     var cube;
     app.get_background = function () {
@@ -13,7 +63,7 @@ var MODULE = (function (app) {
                 'groundLevel_bottom.jpg',
                 'groundLevel_front.jpg',
                 'groundLevel_back.jpg'
-            ]);
+            ], function () { textureLoaded(); });
         return cube;
     }
 
@@ -56,11 +106,13 @@ var MODULE = (function (app) {
         terrain_rayMesh.material = raytarget_material;
         object.rayMesh = terrain_rayMesh;
 
-        var colorMap = new THREE.TextureLoader().load('assets/terrain/terrain_color.jpg');
+        var colorMap = new THREE.TextureLoader().load('assets/terrain/terrain_color.jpg', function () { textureLoaded(); });
         object.colorMap = colorMap;
         // load height map and add it to a new canvas for color lookup in code
-        var normalMap = new THREE.TextureLoader().load('assets/terrain/terrain_normal.png', function (texture) { object.normalMapData = createCanvas(texture.image); });
-        var heightMap = new THREE.TextureLoader().load('assets/terrain/terrain_masks.jpg', function (texture) { object.heightMapData = createCanvas(texture.image); });
+        object.heightMapData = null;
+        object.normalMapData = null;
+        var heightMap = new THREE.TextureLoader().load('assets/terrain/terrain_masks.jpg', function (texture) { textureLoaded(); object.heightMapData = createCanvas(texture.image); });
+        var normalMap = new THREE.TextureLoader().load('assets/terrain/terrain_normal.png', function (texture) { textureLoaded(); object.normalMapData = createCanvas(texture.image); });
         object.heightMap = heightMap;
         object.normalMap = normalMap;
 
@@ -89,5 +141,6 @@ var MODULE = (function (app) {
         context.drawImage(image, 0, 0);
         return context;
     }
+
     return app;
 }(MODULE));
