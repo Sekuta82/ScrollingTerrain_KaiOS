@@ -111,7 +111,7 @@ var MODULE = (function (app) {
         // load height map and add it to a new canvas for color lookup in code
         object.heightMapData = null;
         object.normalMapData = null;
-        var heightMap = new THREE.TextureLoader().load('assets/terrain/terrain_masks.jpg', function (texture) { textureLoaded(); object.heightMapData = createCanvas(texture.image); });
+        var heightMap = new THREE.TextureLoader().load('assets/terrain/terrain_masks.png', function (texture) { textureLoaded(); object.heightMapData = createCanvas(texture.image); });
         var normalMap = new THREE.TextureLoader().load('assets/terrain/terrain_normal.png', function (texture) { textureLoaded(); object.normalMapData = createCanvas(texture.image); });
         object.heightMap = heightMap;
         object.normalMap = normalMap;
