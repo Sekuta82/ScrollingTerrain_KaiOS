@@ -1,4 +1,4 @@
-var MODULE = (function (app) {
+(function (app) {
 
     app.get_terrainMaterial = function () {
         var material = new THREE.RawShaderMaterial({

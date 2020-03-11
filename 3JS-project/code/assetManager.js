@@ -1,4 +1,4 @@
-var MODULE = (function (app) {
+(function (app) {
     app.gltf_loadingDone = false;
 
     app.totalTextureCount = 4;

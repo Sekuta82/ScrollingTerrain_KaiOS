@@ -1,4 +1,4 @@
-var MODULE = (function (app) {
+(function (app) {
     app.pi = Math.PI;
 
     // ======== CONFIG ========
@@ -37,6 +37,7 @@ var MODULE = (function (app) {
         scene_setup();
         document.body.appendChild(renderer.domElement);
         gameRunning = true;
+        TLRSE = new ThreeLiveRawShaderEditor(renderer, camera, scene);
     }
 
     function scene_setup() {

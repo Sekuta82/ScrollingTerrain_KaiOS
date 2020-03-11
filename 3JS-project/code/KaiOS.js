@@ -1,3 +1,18 @@
+class ThreeLiveRawShaderEditor {
+
+    constructor(renderer, camera, scene) {
+       this.renderer = renderer;
+       this.camera = camera;
+       this.scene = scene;
+    }
+
+    compile(){
+        this.renderer.compile(this.scene, this.camera);
+    }
+}
+
+var TLRSE;
+
 var MODULE = (function () {
     var app = {};
 
